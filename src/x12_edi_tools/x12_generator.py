@@ -142,7 +142,7 @@ class X12Generator:
         self.control_numbers['GS'] += 1
         gs_elements = [
             func_id_code, sender_code, receiver_code,
-            self._get_current_date(), self._get_current_time(),
+            self._get_current_date('Y'), self._get_current_time(),
             str(self.control_numbers['GS']), "X", version_override or self.version.split("X")[0]
         ]
         self.add_segment("GS", gs_elements)
@@ -182,10 +182,12 @@ class X12Generator:
         ]
         self.add_segment("IEA", iea_elements)
 
-    def _get_current_date(self) -> str:
-        """Get the current date in YYMMDD format."""
+    def _get_current_date(self, year_format: str = 'y') -> str:
+        """Get the current date in YYMMDD format, or CCYYMMDD for anything other than the default year format of 'y'."""
         from datetime import datetime
-        return datetime.now().strftime("%y%m%d")
+        if year_format != 'y':
+            year_format = 'Y'
+        return datetime.now().strftime(f"%{year_format}%m%d")
 
     def _get_current_time(self) -> str:
         """Get the current time in HHMM format."""
