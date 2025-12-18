@@ -18,12 +18,12 @@ class X12Generator:
     with support for different X12 versions and transaction sets.
     """
 
-    SEGMENT_TERMINATOR = '~'
     ELEMENT_SEPARATOR = '*'
     SUB_ELEMENT_SEPARATOR = ':'
     
-    def __init__(self, version: str = "005010X222A1"):
+    def __init__(self, version: str = "005010X222A1", segment_terminator: str = '~'):
         self.version = version
+        self.segment_terminator = segment_terminator
         self.segments: List[Segment] = []
         self.transaction_set_type: Optional[str] = None
         self.control_numbers: Dict[str, int] = defaultdict(int)
@@ -89,7 +89,7 @@ class X12Generator:
         x12_content = []
         for segment in self.segments:
             segment_str = self.ELEMENT_SEPARATOR.join([segment.id] + segment.elements)
-            x12_content.append(segment_str + self.SEGMENT_TERMINATOR)
+            x12_content.append(segment_str + self.segment_terminator)
         return ''.join(x12_content)
 
     def add_isa_segment(self,
