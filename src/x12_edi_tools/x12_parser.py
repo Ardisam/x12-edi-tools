@@ -21,10 +21,12 @@ class X12Parser:
     SEGMENT_TERMINATOR = '~'
     ELEMENT_SEPARATOR = '*'
     
-    def __init__(self):
+    def __init__(self, element_separator: str = ELEMENT_SEPARATOR, segment_terminator: str = SEGMENT_TERMINATOR):
         self.parsed_data: Dict[str, List[Segment]] = defaultdict(list)
         self.transaction_set_header: Optional[Segment] = None
         self.version: Optional[str] = None
+        self.element_separator = element_separator
+        self.segment_terminator = segment_terminator
 
     def parse(self, x12_content: str) -> Dict[str, List[Segment]]:
         """
@@ -49,12 +51,12 @@ class X12Parser:
 
     def _split_into_segments(self, x12_content: str) -> List[str]:
         """Split the X12 content into individual segments."""
-        return [seg.strip() for seg in x12_content.split(self.SEGMENT_TERMINATOR) if seg.strip()]
+        return [seg.strip() for seg in x12_content.split(self.segment_terminator) if seg.strip()]
 
     def _process_segments(self, segments: List[str]) -> None:
         """Process each segment and organize them into the parsed_data structure."""
         for segment in segments:
-            elements = segment.split(self.ELEMENT_SEPARATOR)
+            elements = segment.split(self.element_separator)
             segment_id = elements[0]
             parsed_segment = Segment(id=segment_id, elements=elements[1:])
             
